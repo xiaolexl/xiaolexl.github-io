@@ -112,7 +112,7 @@
       var moneyqmao = 15300;
       var moneyall = moneyxl + moneyqmao;
     </script>
-
+    
     <!-- 悬浮的余额信息 -->
     <div id="balance-info">
       账户总余额: <span id="balance">33800</span><br>
@@ -375,10 +375,19 @@
       var xlTotalSpent = xlValue1 + xlValue2 + sharedPerPerson;
       var qmaoTotalSpent = qmaoValue1 + qmaoValue2 + sharedPerPerson;
       
-      var xlRemaining = moneyxl - xlTotalSpent;
-      var qmaoRemaining = moneyqmao - qmaoTotalSpent;
-      var totalRemaining = moneyall - xlTotalSpent - qmaoTotalSpent;
+      // 确保剩余金额不为负数
+      var xlRemaining = Math.max(0, moneyxl - xlTotalSpent);
+      var qmaoRemaining = Math.max(0, moneyqmao - qmaoTotalSpent);
+      var totalRemaining = Math.max(0, moneyall - xlTotalSpent - qmaoTotalSpent);
       var totalSum = xlTotalSpent + qmaoTotalSpent;
+      
+      // 如果剩余金额为0，调整已消费金额为最大可能值
+      if (moneyxl - xlTotalSpent < 0) {
+        xlTotalSpent = moneyxl;
+      }
+      if (moneyqmao - qmaoTotalSpent < 0) {
+        qmaoTotalSpent = moneyqmao;
+      }
       
       // 更新显示
       document.getElementById("balance").textContent = totalRemaining;
