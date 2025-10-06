@@ -1,148 +1,418 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的个人博客</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background-color: #f9f9f9;
-            padding: 0;
-            margin: 0;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        header {
-            background-color: #2c3e50;
-            color: white;
-            padding: 20px 0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        header h1 {
-            margin: 0;
-            font-size: 2.5em;
-        }
-        header p {
-            margin: 10px 0 0;
-            opacity: 0.8;
-        }
-        nav {
-            background-color: #34495e;
-        }
-        nav ul {
-            list-style: none;
-            display: flex;
-        }
-        nav ul li {
-            padding: 15px 20px;
-        }
-        nav ul li a {
-            color: white;
-            text-decoration: none;
-        }
-        nav ul li a:hover {
-            text-decoration: underline;
-        }
-        main {
-            padding: 40px 0;
-        }
-        .blog-post {
-            background: white;
-            margin-bottom: 30px;
-            padding: 30px;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .blog-post h2 {
-            color: #2c3e50;
-            margin-bottom: 15px;
-        }
-        .post-meta {
-            color: #7f8c8d;
-            font-size: 0.9em;
-            margin-bottom: 15px;
-        }
-        .read-more {
-            display: inline-block;
-            margin-top: 15px;
-            color: #3498db;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        .read-more:hover {
-            text-decoration: underline;
-        }
-        footer {
-            background-color: #2c3e50;
-            color: white;
-            text-align: center;
-            padding: 20px 0;
-            margin-top: 40px;
-        }
-        @media (max-width: 768px) {
-            nav ul {
-                flex-direction: column;
-            }
-            nav ul li {
-                padding: 10px 20px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>消费清单</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-size: 18px;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 25px;
+      margin-bottom: 30px;
+    }
+    .select-row {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      width: 100%;
+    }
+    .select-box {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    #balance-info {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      font-size: 18px;
+      line-height: 1.6;
+      border: 1px solid #eee;
+      min-width: 200px;
+    }
+    #total-sum {
+      font-weight: bold;
+      color: #ff6600;
+    }
+    h2 {
+      text-align: center;
+      font-size: 28px;
+      margin-bottom: 30px;
+      margin-top: 20px;
+    }
+    select {
+      width: 320px;
+      padding: 10px;
+      font-size: 18px;
+      height: 50px;
+      font-family: monospace;
+    }
+    label {
+      font-size: 20px;
+    }
+    input[type="submit"] {
+      padding: 12px 30px;
+      font-size: 20px;
+      margin-top: 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    input[type="submit"]:hover {
+      background-color: #45a049;
+    }
+    option {
+      font-family: monospace;
+    }
+    .charts-container {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 30px;
+      width: 100%;
+      margin-bottom: 50px;
+    }
+    .chart-container {
+      width: 300px;
+      height: 300px;
+      text-align: center;
+    }
+    .chart-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .shared-consumption {
+      margin-top: 20px;
+      border-top: 2px dashed #ccc;
+      padding-top: 20px;
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <h1>小乐的个人博客</h1>
-            <p>分享我的想法、经验和学习笔记</p>
-        </div>
-    </header>
+  <form>
+    <script>
+      var moneyxl = 18500;
+      var moneyqmao = 15300;
+      var moneyall = moneyxl + moneyqmao;
+    </script>
     
-    <nav>
-        <div class="container">
-            <ul>
-                <li><a href="#">首页</a></li>
-                <li><a href="#">关于我</a></li>
-                <li><a href="#">文章分类</a></li>
-                <li><a href="#">项目</a></li>
-                <li><a href="#">联系</a></li>
-            </ul>
+    <!-- 悬浮的余额信息 -->
+    <div id="balance-info">
+      账户总余额: <span id="balance">33800</span><br>
+      小乐剩余: <span id="xl-balance">18500</span><br>
+      Q猫剩余: <span id="qmao-balance">15300</span><br>
+      总消费: <span id="total-sum">0</span>
+    </div>
+
+    <h2>小乐&Q猫消费清单</h2>
+    <div class="container">
+      <!-- 第一次消费 -->
+      <div class="select-row">
+        <div class="select-box">
+          <label for="value1">小乐消费1:</label>
+          <select id="value1" name="value1" onchange="calculateBalance()">
+            <option value="0">请选择商品</option>
+            <option value="11499">iPhone17pro 512G--------￥11499</option>
+            <option value="9499">iPhone17pro 256G--------￥9499</option>
+            <option value="5999">iPhone17 256G--------￥5999</option>
+            <option value="5999">小米17pro 1TB--------￥5999</option>
+            <option value="5299">小米17 1TB--------￥5299</option>
+            <option value="2799">大疆Poket3--------￥2799</option>
+            <option value="3699">iPad Air--------￥3699</option>
+            <option value="2498">PS5--------￥2498</option>
+            <option value="3200">Switch2--------￥3200</option>
+          </select>
         </div>
-    </nav>
-    
-    <main class="container">
-        <article class="blog-post">
-            <h2>小乐年度消费清单</h2>
-            <div class="post-meta">发布于 2025年10月6日 | 分类: <a href="#">技术</a></div>
-            <p></p>
-            <a href="index.html" class="read-more">阅读更多</a>
-        </article>
         
-        <article class="blog-post">
-            <h2>如何开始学习编程</h2>
-            <div class="post-meta">发布于 2025年10月5日 | 分类: <a href="#">编程</a></div>
-            <p>学习编程是一个充满挑战但也非常有趣的过程。对于初学者来说，选择合适的编程语言和学习资源非常重要。</p>
-            <p>我的建议是从C开始，因为它语法简单，应用广泛。同时，不要只看教程，要多动手实践，通过做项目来巩固所学知识。</p>
-            <a href="#" class="read-more">阅读更多</a>
-        </article>
-        
-    </main>
-    
-    <footer>
-        <div class="container">
-            <p>&copy; 2025 我的个人博客. 保留所有权利.</p>
-            <p>联系邮箱: 2013983747@qq.com</p>
+        <div class="select-box">
+          <label for="value2">Q猫消费1:</label>
+          <select id="value2" name="value2" onchange="calculateBalance()">
+            <option value="0">请选择商品</option>
+            <option value="11499">iPhone17pro 512G--------￥11499</option>
+            <option value="9499">iPhone17pro 256G--------￥9499</option>
+            <option value="5999">iPhone17 256G--------￥5999</option>
+            <option value="5999">小米17pro 1TB--------￥5999</option>
+            <option value="5299">小米17 1TB--------￥5299</option>
+            <option value="2799">大疆Poket3--------￥2799</option>
+            <option value="3699">iPad Air--------￥3699</option>
+            <option value="2498">PS5--------￥2498</option>
+            <option value="3200">Switch2--------￥3200</option>
+          </select>
         </div>
-    </footer>
+      </div>
+      
+      <!-- 第二次消费 -->
+      <div class="select-row">
+        <div class="select-box">
+          <label for="value3">小乐消费2:</label>
+          <select id="value3" name="value3" onchange="calculateBalance()">
+            <option value="0">请选择商品</option>
+            <option value="11499">iPhone17pro 512G--------￥11499</option>
+            <option value="9499">iPhone17pro 256G--------￥9499</option>
+            <option value="5999">iPhone17 256G--------￥5999</option>
+            <option value="5999">小米17pro 1TB--------￥5999</option>
+            <option value="5299">小米17 1TB--------￥5299</option>
+            <option value="2799">大疆Poket3--------￥2799</option>
+            <option value="3699">iPad Air--------￥3699</option>
+            <option value="2498">PS5--------￥2498</option>
+            <option value="3200">Switch2--------￥3200</option>
+          </select>
+        </div>
+        
+        <div class="select-box">
+          <label for="value4">Q猫消费2:</label>
+          <select id="value4" name="value4" onchange="calculateBalance()">
+            <option value="0">请选择商品</option>
+            <option value="11499">iPhone17pro 512G--------￥11499</option>
+            <option value="9499">iPhone17pro 256G--------￥9499</option>
+            <option value="5999">iPhone17 256G--------￥5999</option>
+            <option value="5999">小米17pro 1TB--------￥5999</option>
+            <option value="5299">小米17 1TB--------￥5299</option>
+            <option value="2799">大疆Poket3--------￥2799</option>
+            <option value="3699">iPad Air--------￥3699</option>
+            <option value="2498">PS5--------￥2498</option>
+            <option value="3200">Switch2--------￥3200</option>
+          </select>
+        </div>
+      </div>
+      
+      <!-- 共同消费 -->
+      <div class="shared-consumption">
+        <div class="select-row">
+          <div class="select-box">
+            <label for="shared-value">共同消费:</label>
+            <select id="shared-value" name="shared-value" onchange="calculateBalance()">
+              <option value="0">请选择商品</option>
+              <option value="11499">iPhone17pro 512G--------￥11499</option>
+              <option value="9499">iPhone17pro 256G--------￥9499</option>
+              <option value="5999">iPhone17 256G--------￥5999</option>
+              <option value="5999">小米17pro 1TB--------￥5999</option>
+              <option value="5299">小米17 1TB--------￥5299</option>
+              <option value="2799">大疆Poket3--------￥2799</option>
+              <option value="3699">iPad Air--------￥3699</option>
+              <option value="2498">PS5--------￥2498</option>
+              <option value="3200">Switch2--------￥3200</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="text-align: center; margin-top: 30px;">
+      <input type="submit" value="购买">
+    </div>
+  </form>
+
+  <div class="charts-container">
+    <!-- 小乐消费饼图 -->
+    <div class="chart-container">
+      <div class="chart-title">小乐消费情况</div>
+      <canvas id="xlPieChart"></canvas>
+    </div>
+    
+    <!-- 总消费饼图 -->
+    <div class="chart-container">
+      <div class="chart-title">总消费情况</div>
+      <canvas id="totalPieChart"></canvas>
+    </div>
+    
+    <!-- Q猫消费饼图 -->
+    <div class="chart-container">
+      <div class="chart-title">Q猫消费情况</div>
+      <canvas id="qmaoPieChart"></canvas>
+    </div>
+  </div>
+
+  <script>
+    // 初始化小乐饼图
+    var xlCtx = document.getElementById('xlPieChart').getContext('2d');
+    var xlPieChart = new Chart(xlCtx, {
+      type: 'pie',
+      data: {
+        labels: ['已消费', '剩余'],
+        datasets: [{
+          data: [0, moneyxl],
+          backgroundColor: [
+            '#FF6384', // 已消费 - 红色
+            '#CCCCCC'  // 剩余 - 灰色
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'top',
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                var label = context.label || '';
+                if (label) {
+                  label += ': ';
+                }
+                label += context.raw + '元';
+                label += ' (' + Math.round(context.raw / moneyxl * 100) + '%)';
+                return label;
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // 初始化总消费饼图
+    var totalCtx = document.getElementById('totalPieChart').getContext('2d');
+    var totalPieChart = new Chart(totalCtx, {
+      type: 'pie',
+      data: {
+        labels: ['已消费', '剩余'],
+        datasets: [{
+          data: [0, moneyall],
+          backgroundColor: [
+            '#FFCE56', // 已消费 - 黄色
+            '#CCCCCC'  // 剩余 - 灰色
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'top',
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                var label = context.label || '';
+                if (label) {
+                  label += ': ';
+                }
+                label += context.raw + '元';
+                label += ' (' + Math.round(context.raw / moneyall * 100) + '%)';
+                return label;
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // 初始化Q猫饼图
+    var qmaoCtx = document.getElementById('qmaoPieChart').getContext('2d');
+    var qmaoPieChart = new Chart(qmaoCtx, {
+      type: 'pie',
+      data: {
+        labels: ['已消费', '剩余'],
+        datasets: [{
+          data: [0, moneyqmao],
+          backgroundColor: [
+            '#9966FF', // 已消费 - 紫色
+            '#CCCCCC'  // 剩余 - 灰色
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'top',
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                var label = context.label || '';
+                if (label) {
+                  label += ': ';
+                }
+                label += context.raw + '元';
+                label += ' (' + Math.round(context.raw / moneyqmao * 100) + '%)';
+                return label;
+              }
+            }
+          }
+        }
+      }
+    });
+
+    function calculateBalance() {
+      // 获取所有下拉菜单的选择值
+      var xlSelect1 = document.getElementById("value1");
+      var qmaoSelect1 = document.getElementById("value2");
+      var xlSelect2 = document.getElementById("value3");
+      var qmaoSelect2 = document.getElementById("value4");
+      var sharedSelect = document.getElementById("shared-value");
+      
+      var xlValue1 = parseInt(xlSelect1.value);
+      var qmaoValue1 = parseInt(qmaoSelect1.value);
+      var xlValue2 = parseInt(xlSelect2.value);
+      var qmaoValue2 = parseInt(qmaoSelect2.value);
+      var sharedValue = parseInt(sharedSelect.value);
+      
+      // 计算共同消费(每人承担一半)
+      var sharedPerPerson = sharedValue / 2;
+      
+      // 计算各项余额
+      var xlTotalSpent = xlValue1 + xlValue2 + sharedPerPerson;
+      var qmaoTotalSpent = qmaoValue1 + qmaoValue2 + sharedPerPerson;
+      
+      // 确保剩余金额不为负数
+      var xlRemaining = Math.max(0, moneyxl - xlTotalSpent);
+      var qmaoRemaining = Math.max(0, moneyqmao - qmaoTotalSpent);
+      var totalRemaining = Math.max(0, moneyall - xlTotalSpent - qmaoTotalSpent);
+      var totalSum = xlTotalSpent + qmaoTotalSpent;
+      
+      // 如果剩余金额为0，调整已消费金额为最大可能值
+      if (moneyxl - xlTotalSpent < 0) {
+        xlTotalSpent = moneyxl;
+      }
+      if (moneyqmao - qmaoTotalSpent < 0) {
+        qmaoTotalSpent = moneyqmao;
+      }
+      
+      // 更新显示
+      document.getElementById("balance").textContent = totalRemaining;
+      document.getElementById("xl-balance").textContent = xlRemaining;
+      document.getElementById("qmao-balance").textContent = qmaoRemaining;
+      document.getElementById("total-sum").textContent = totalSum;
+      
+      // 更新饼图数据
+      xlPieChart.data.datasets[0].data = [xlTotalSpent, xlRemaining];
+      xlPieChart.update();
+      
+      qmaoPieChart.data.datasets[0].data = [qmaoTotalSpent, qmaoRemaining];
+      qmaoPieChart.update();
+      
+      totalPieChart.data.datasets[0].data = [totalSum, totalRemaining];
+      totalPieChart.update();
+      
+      console.log("小乐消费1: " + xlValue1);
+      console.log("小乐消费2: " + xlValue2);
+      console.log("Q猫消费1: " + qmaoValue1);
+      console.log("Q猫消费2: " + qmaoValue2);
+      console.log("共同消费: " + sharedValue + "(每人承担:" + sharedPerPerson + ")");
+      console.log("总消费: " + totalSum);
+      console.log("剩余总余额: " + totalRemaining);
+    }
+  </script>
 </body>
 </html>
