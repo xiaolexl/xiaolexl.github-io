@@ -48,6 +48,10 @@
       font-weight: bold;
       color: #ff6600;
     }
+    #xl-spent, #qmao-spent {
+      font-weight: bold;
+      color: #4361ee;
+    }
     h2 {
       text-align: center;
       font-size: 28px;
@@ -118,6 +122,8 @@
       账户总余额: <span id="balance">33800</span><br>
       小乐剩余: <span id="xl-balance">18500</span><br>
       Q猫剩余: <span id="qmao-balance">15300</span><br>
+      小乐花费: <span id="xl-spent">0</span><br>
+      Q猫花费: <span id="qmao-spent">0</span><br>
       总消费: <span id="total-sum">0</span>
     </div>
 
@@ -398,6 +404,8 @@
       document.getElementById("balance").textContent = totalRemaining;
       document.getElementById("xl-balance").textContent = xlRemaining;
       document.getElementById("qmao-balance").textContent = qmaoRemaining;
+      document.getElementById("xl-spent").textContent = xlTotalSpent;
+      document.getElementById("qmao-spent").textContent = qmaoTotalSpent;
       document.getElementById("total-sum").textContent = totalSum;
       
       // 更新饼图数据
